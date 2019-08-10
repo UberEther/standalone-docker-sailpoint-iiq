@@ -1,0 +1,110 @@
+--
+-- This script is generated from the *Extended.hbm.xml
+-- files and contains alter statements and indexes for
+-- extended attributes that can be applied to an
+-- existing database.
+--
+
+USE identityiq;
+
+--
+-- Identity
+--
+
+alter table identityiq.spt_identity add needs_joiner varchar(450);
+create index spt_identity_needsJoiner_ci on identityiq.spt_identity (needs_joiner(255));
+alter table identityiq.spt_identity add middle_name varchar(450);
+create index spt_identity_middleName_ci on identityiq.spt_identity (middle_name(255));
+
+--
+-- Link
+--
+
+alter table identityiq.spt_link add ps_account varchar(450);
+create index spt_link_psAccount_ci on identityiq.spt_link (ps_account(255));
+alter table identityiq.spt_link add disabled_account varchar(450);
+create index spt_link_disabledAccount_ci on identityiq.spt_link (disabled_account(255));
+alter table identityiq.spt_link add locked_account varchar(450);
+create index spt_link_lockedAccount_ci on identityiq.spt_link (locked_account(255));
+
+--
+-- Application
+--
+
+alter table identityiq.spt_application add bus_app varchar(450);
+create index spt_app_busApp_ci on identityiq.spt_application (bus_app(255));
+alter table identityiq.spt_application add termination_process varchar(450);
+create index spt_app_terminationProcess_ci on identityiq.spt_application (termination_process(255));
+alter table identityiq.spt_application add loa_process varchar(450);
+create index spt_app_loaProcess_ci on identityiq.spt_application (loa_process(255));
+alter table identityiq.spt_application add ltd_process varchar(450);
+create index spt_app_ltdProcess_ci on identityiq.spt_application (ltd_process(255));
+alter table identityiq.spt_application add mover_process varchar(450);
+create index spt_app_moverOpt_ci on identityiq.spt_application (mover_process(255));
+alter table identityiq.spt_application add native_change_process varchar(450);
+create index spt_app_nativeChangeOpt_ci on identityiq.spt_application (native_change_process(255));
+alter table identityiq.spt_application add app_bus_approvers varchar(450);
+create index spt_app_busApprs_ci on identityiq.spt_application (app_bus_approvers(255));
+alter table identityiq.spt_application add additional_app_bus_approvers varchar(450);
+create index spt_app_addnlBusApprs_ci on identityiq.spt_application (additional_app_bus_approvers(255));
+alter table identityiq.spt_application add enablepswexp_notification varchar(450);
+create index spt_app_enableexpNotif_ci on identityiq.spt_application (enablepswexp_notification(255));
+alter table identityiq.spt_application add after_pass_exp_process varchar(450);
+create index spt_app_afterpwdexpOpt_ci on identityiq.spt_application (after_pass_exp_process(255));
+alter table identityiq.spt_application add joiner_enabled varchar(450);
+create index spt_app_joinerEnabled_ci on identityiq.spt_application (joiner_enabled(255));
+alter table identityiq.spt_application add rehire_process varchar(450);
+create index spt_app_rehireOpt_ci on identityiq.spt_application (rehire_process(255));
+alter table identityiq.spt_application add rtwloa_process varchar(450);
+create index spt_app_rtwLOAOpt_ci on identityiq.spt_application (rtwloa_process(255));
+alter table identityiq.spt_application add rtwltd_process varchar(450);
+create index spt_app_rtwLTDOpt_ci on identityiq.spt_application (rtwltd_process(255));
+alter table identityiq.spt_application add reverseleaver_process varchar(450);
+create index spt_app_revrsleaverOpt_ci on identityiq.spt_application (reverseleaver_process(255));
+alter table identityiq.spt_application add soft_policyviolations varchar(450);
+create index spt_app_softPV_ci on identityiq.spt_application (soft_policyviolations(255));
+alter table identityiq.spt_application add hard_policyviolations varchar(450);
+create index spt_app_hardPV_ci on identityiq.spt_application (hard_policyviolations(255));
+
+--
+-- Bundle
+--
+
+alter table identityiq.spt_bundle add is_birthright varchar(450);
+create index spt_bundle_birthright_ci on identityiq.spt_bundle (is_birthright(255));
+alter table identityiq.spt_bundle add app_name varchar(450);
+create index spt_bundle_appName_ci on identityiq.spt_bundle (app_name(255));
+alter table identityiq.spt_bundle add role_bus_approvers varchar(450);
+create index spt_bundle_roleBusApprs_ci on identityiq.spt_bundle (role_bus_approvers(255));
+alter table identityiq.spt_bundle add additional_role_bus_approvers varchar(450);
+create index spt_bundle_addRoleBusApprs_ci on identityiq.spt_bundle (additional_role_bus_approvers(255));
+alter table identityiq.spt_bundle add role_privileged varchar(450);
+create index spt_bundle_rolePriv_ci on identityiq.spt_bundle (role_privileged(255));
+
+--
+-- ManagedAttribute
+--
+
+alter table identityiq.spt_managed_attribute add is_birthright varchar(450);
+create index spt_manag_atr_birth_ci on identityiq.spt_managed_attribute (is_birthright(255));
+alter table identityiq.spt_managed_attribute add ent_bus_approvers varchar(450);
+create index spt_manag_atr_eBusApp_ci on identityiq.spt_managed_attribute (ent_bus_approvers(255));
+alter table identityiq.spt_managed_attribute add additional_ent_bus_approvers varchar(450);
+create index spt_manag_atr_addEntBusApr_ci on identityiq.spt_managed_attribute (additional_ent_bus_approvers(255));
+alter table identityiq.spt_managed_attribute add ent_app_name varchar(450);
+create index spt_manag_atr_eAppName_ci on identityiq.spt_managed_attribute (ent_app_name(255));
+alter table identityiq.spt_managed_attribute add ent_privileged varchar(450);
+create index spt_manag_atr_entPrivilgd_ci on identityiq.spt_managed_attribute (ent_privileged(255));
+alter table identityiq.spt_managed_attribute add manual_override varchar(450);
+create index spt_manag_atr_manOver_ci on identityiq.spt_managed_attribute (manual_override(255));
+
+--
+-- CertificationItem
+--
+
+alter table identityiq.spt_certification_item add disabled_account varchar(450);
+create index spt_certitem_disAcct_ci on identityiq.spt_certification_item (disabled_account(255));
+alter table identityiq.spt_certification_item add locked_account varchar(450);
+create index spt_certitem_lockAcct_ci on identityiq.spt_certification_item (locked_account(255));
+alter table identityiq.spt_certification_item add ps_account varchar(450);
+create index spt_certitem_psAccount_ci on identityiq.spt_certification_item (ps_account(255));
