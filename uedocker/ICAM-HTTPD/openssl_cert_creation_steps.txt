@@ -1,0 +1,99 @@
+#####
+##### NOTE: These are the notes from when this was originally executed
+##### See the regenCert.sh for a consolidated process
+#####
+
+Certificate creation using OpenSSL 
+
+Assumptions:
+- Steps are run on a dev workstation with OpenSSL installed and path set to access the openssl.cnf file (by default .cnf file is in the /bin directory and should be copied to /openssl directory OR are being run within a docker container or other Linux environment which should have a volume mounted to the local hard disk (alternatively copying the contents of the .cer file into a local file is also possible).
+
+Run the following command to create the new key and .csr request that will be used to create the certificate for the Apache HTTPD server.  This command will ask for identifying information (country, state, email, etc) however the only important items are Common Name which should be set to *.icam.local and possibly OU which can be used to identify the certficate as developmental by entering DEVUSEONLY into the field (or words to this effect).
+
+openssl req -new -newkey rsa:2048 -nodes -keyout icamdevenv.key -out icamdevenv.csr
+
+Run the following command to create the actual certificate that will be used on the HTTPD server in conjunction with the .key file created in the previous step.
+
+openssl x509 -req -days 3652 -sha384 -in icamdevenv.csr -signkey icamdevenv.key -out icamdevenv.cer
+
+Run the following command to display all details of the certificate so that it can be reviewed prior to deployment. This is only an example and the .crt it is based on has been deleted).
+
+openssl x509 -text -in icamdevenv.cer  
+
+root@e30554f75ea2:/usr/local/install# openssl x509 -text -in icamdevenv.crt
+Certificate:
+    Data:
+        Version: 1 (0x0)
+        Serial Number:
+            c6:c6:49:b2:d9:0c:4f:49
+    Signature Algorithm: sha384WithRSAEncryption
+        Issuer: C=US, ST=VA, L=Sterling, O=UberEther, OU=DEVUSEONLY, CN=*.icam.local/emailAddress=icam@uberether.com
+        Validity
+            Not Before: Dec  2 16:48:55 2016 GMT
+            Not After : Nov 30 16:48:55 2026 GMT
+        Subject: C=US, ST=VA, L=Sterling, O=UberEther, OU=DEVUSEONLY, CN=*.icam.local/emailAddress=icam@uberether.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:c8:2f:7e:67:3b:36:f2:e6:c4:9f:8a:c4:c3:81:
+                    8b:f0:d0:37:7f:c3:d8:1d:31:73:e3:c6:7e:80:51:
+                    ad:11:bd:b0:d5:0d:ac:a7:38:36:f2:12:36:75:2a:
+                    01:a2:8d:61:22:8c:da:cc:2a:30:d2:89:e4:e1:54:
+                    5c:1e:b5:a9:e1:d3:59:28:54:c3:1d:e1:2b:ec:11:
+                    50:fa:73:1f:64:87:1b:ef:e7:a9:f5:67:be:f7:a5:
+                    ec:45:0a:96:16:3b:4d:1b:a5:c3:a2:e2:bb:1e:ca:
+                    fa:43:cf:04:4d:48:55:bc:d6:d3:fc:85:4f:93:44:
+                    45:7f:ef:b6:9e:28:47:57:3f:61:54:86:d6:b9:52:
+                    df:a7:b8:a8:91:8a:8f:18:ef:5d:8a:36:fb:ad:58:
+                    c8:04:57:f6:46:e6:68:6d:b7:77:75:44:7d:46:cd:
+                    ee:9b:68:c1:8e:a1:1d:d4:17:18:1c:83:af:cd:e1:
+                    01:89:ef:98:78:41:7a:4c:9c:36:f8:ed:0c:35:cf:
+                    a4:37:ec:04:01:42:54:17:24:1d:38:84:f2:d8:3d:
+                    83:57:28:50:c6:0f:31:ca:0e:ab:c0:76:65:ab:1d:
+                    da:00:02:f5:1d:cc:f7:d8:01:63:34:ab:a5:c4:68:
+                    25:4d:a1:42:80:50:1a:13:4c:aa:bc:1e:5a:ed:32:
+                    f2:ad
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: sha384WithRSAEncryption
+         ad:00:8a:ae:56:e8:f9:f1:5e:d3:f5:18:b8:6d:7c:46:7f:df:
+         9e:57:72:58:49:59:0e:b0:fb:6a:e6:cb:27:0a:91:6a:6b:6d:
+         47:b5:b3:db:1f:dd:95:5b:73:6e:69:a4:e6:04:1e:2d:69:61:
+         6b:0c:dd:50:59:18:57:5a:e7:e7:b4:ad:ae:76:a8:34:5c:5c:
+         01:c2:e7:52:ce:37:06:b1:bc:d4:90:da:50:d9:fb:11:fa:b8:
+         23:8a:48:50:ba:55:a2:73:28:d3:8e:f8:bf:81:80:b9:70:d4:
+         a8:c1:c1:1b:9a:91:ff:a6:d1:7e:66:72:c2:90:25:4d:08:78:
+         1e:bb:2c:4e:15:f4:77:19:48:93:5a:b3:3b:55:a4:58:70:e0:
+         f0:69:1a:87:0c:7d:6c:10:48:cf:a2:17:29:d6:c3:5e:35:e0:
+         71:83:89:81:3f:69:14:e8:f0:f6:5d:df:6c:f9:a8:a2:8a:f2:
+         57:de:c1:13:96:10:8e:59:e8:9f:7d:87:34:b0:b6:84:02:d5:
+         14:6e:45:b5:bf:c0:f9:d4:e5:70:e6:c7:8a:aa:83:44:3f:0c:
+         8c:8f:9f:d4:b8:82:91:44:d2:e2:4b:09:85:08:35:c2:5b:b0:
+         89:cc:4f:6d:85:1d:ed:76:41:24:ba:a1:a1:97:bb:2e:cf:21:
+         32:03:56:8a
+-----BEGIN CERTIFICATE-----
+MIIDnjCCAoYCCQDGxkmy2QxPSTANBgkqhkiG9w0BAQwFADCBkDELMAkGA1UEBhMC
+VVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhTdGVybGluZzESMBAGA1UECgwJVWJl
+ckV0aGVyMRMwEQYDVQQLDApERVZVU0VPTkxZMRUwEwYDVQQDDAwqLmljYW0ubG9j
+YWwxITAfBgkqhkiG9w0BCQEWEmljYW1AdWJlcmV0aGVyLmNvbTAeFw0xNjEyMDIx
+NjQ4NTVaFw0yNjExMzAxNjQ4NTVaMIGQMQswCQYDVQQGEwJVUzELMAkGA1UECAwC
+VkExETAPBgNVBAcMCFN0ZXJsaW5nMRIwEAYDVQQKDAlVYmVyRXRoZXIxEzARBgNV
+BAsMCkRFVlVTRU9OTFkxFTATBgNVBAMMDCouaWNhbS5sb2NhbDEhMB8GCSqGSIb3
+DQEJARYSaWNhbUB1YmVyZXRoZXIuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+MIIBCgKCAQEAyC9+Zzs28ubEn4rEw4GL8NA3f8PYHTFz48Z+gFGtEb2w1Q2spzg2
+8hI2dSoBoo1hIozazCow0onk4VRcHrWp4dNZKFTDHeEr7BFQ+nMfZIcb7+ep9We+
+96XsRQqWFjtNG6XDouK7Hsr6Q88ETUhVvNbT/IVPk0RFf++2nihHVz9hVIbWuVLf
+p7iokYqPGO9dijb7rVjIBFf2RuZobbd3dUR9Rs3um2jBjqEd1BcYHIOvzeEBie+Y
+eEF6TJw2+O0MNc+kN+wEAUJUFyQdOITy2D2DVyhQxg8xyg6rwHZlqx3aAAL1Hcz3
+2AFjNKulxGglTaFCgFAaE0yqvB5a7TLyrQIDAQABMA0GCSqGSIb3DQEBDAUAA4IB
+AQCtAIquVuj58V7T9Ri4bXxGf9+eV3JYSVkOsPtq5ssnCpFqa21HtbPbH92VW3Nu
+aaTmBB4taWFrDN1QWRhXWufntK2udqg0XFwBwudSzjcGsbzUkNpQ2fsR+rgjikhQ
+ulWicyjTjvi/gYC5cNSowcEbmpH/ptF+ZnLCkCVNCHgeuyxOFfR3GUiTWrM7VaRY
+cODwaRqHDH1sEEjPohcp1sNeNeBxg4mBP2kU6PD2Xd9s+aiiivJX3sETlhCOWeif
+fYc0sLaEAtUUbkW1v8D51OVw5seKqoNEPwyMj5/UuIKRRNLiSwmFCDXCW7CJzE9t
+hR3tdkEkuqGhl7suzyEyA1aK
+-----END CERTIFICATE-----
+
+Utilize the following command to verify that the certificate is valid.  Error 18 is to be expected as this representst that the certificate has been self-signed.
+
+openssl verify <certificate_name>.cer 

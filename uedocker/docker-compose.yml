@@ -1,0 +1,46 @@
+# docker-compose.yaml
+version: '2'
+
+volumes:
+  db_volume: # Separate persistent volume for the DB data
+
+services:
+  db:
+    build: ./ICAM-MYSQL
+    expose:
+       - "3306"
+    ports:
+       - "3306:3306" # For dev debugging
+    volumes:
+      - "db_volume:/var/lib/mysql"
+      - "./volumes/app-ue:/ue/iiq/tomcat/webapps/ue:rw"
+      - "./volumes/app-scripts:/ue/iiq/scripts:ro"
+
+  app:
+    build: ./ICAM-TOMCAT
+    depends_on:
+       - db
+    links:
+       - db:mysql.icam.local
+    expose:
+       - "8009"
+    ports:
+       - "8080:8080" # For dev debugging - HTTP interface
+       - "8000:8000" # For dev debugging - Java debug (if enabled in Dockerfile)
+       - "8001:8001" # For dev debugging - JMX (if enabled in Dockerfile)
+    volumes:
+       - "./volumes/app-logs:/ue/logs/tomcat"
+       - "./volumes/app-ue:/usr/local/tomcat/webapps/ue"
+       - "./volumes/app-scripts:/ue/iiq/scripts:ro"
+
+  web: # Note: URL is https://dev.icam.local
+    build: ./ICAM-HTTPD
+    depends_on:
+       - app
+    links:
+       - app:iiq.icam.local
+    ports:
+       - "443:443"
+       - "80:80"
+    volumes:
+       - "./volumes/web-logs:/ue/logs/httpd"
