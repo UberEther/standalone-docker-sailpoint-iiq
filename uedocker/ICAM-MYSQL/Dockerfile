@@ -1,5 +1,5 @@
-FROM mysql:5.7
-MAINTAINER Michael Samblanet <samblanetm@uberether.com>
+FROM mysql:5
+MAINTAINER Matt Topper <matt@uberether.com>
 
 ENV MYSQL_ROOT_PASSWORD=root
 

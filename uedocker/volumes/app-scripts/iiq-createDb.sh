@@ -5,7 +5,8 @@ SP_HOME="${SP_HOME:-/ue/iiq/tomcat/webapps/ue}"
 MYSQL_HOST="localhost"
 
 CREATION_SCRIPTS=(
-        "${SP_HOME}/WEB-INF/database/create_identityiq_tables-8.0.mysql"
+        "${SP_HOME}/database/create_identityiq_tables-8.0.mysql"
+        "/ue/iiq/scripts/add_identityiq_extensions.mysql"
     )
 
 UPDATE_SCRIPTS=(
@@ -58,8 +59,6 @@ if [ "$DBS" != "identityiq"  ]; then
             exit 1
         fi
         echo "#### `md5sum ${SCRIPT_FILE}`"
-        echo "### Modifying creation script to remove creation of user ###"
-      ###  sed -i '/^CREATE USER IF NOT EXISTS/ d' "${SCRIPT_FILE}" 
         mysql -h"${MYSQL_HOST}" < "${SCRIPT_FILE}" || onFailure
     done
 else
@@ -74,8 +73,12 @@ else
     for SCRIPT_FILE in "${UPDATE_SCRIPTS[@]}"; do
         echo "###############################"
         if [ ! -f "${SCRIPT_FILE}" ]; then
-            echo "#### ERROR: File not found: ${SCRIPT_FILE}"
-            exit 1
+			if [ ! -f "/ue/iiq/scripts/add_identityiq_extensions.mysql" ]; then
+				echo "#### NOTICE: Accelerator Pack Extensions Not Loaded"
+			else
+				echo "#### ERROR: File not found: ${SCRIPT_FILE}"
+            	exit 1
+			fi
         fi
         echo "#### `md5sum ${SCRIPT_FILE}`"
         mysql -f -h"${MYSQL_HOST}" < "${SCRIPT_FILE}" || onFailure
