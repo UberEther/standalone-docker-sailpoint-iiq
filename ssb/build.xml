@@ -117,6 +117,9 @@
 			            <try>
 			                <echo>Overlaying Object Properties XML files onto SSB</echo>
 			                <unzip dest="components/ap" src="components/iiq${IIQVersion}/base/ap/${acceleratorPackZipName}" />	
+							
+							<copy todir="../uedocker/volumes/app-scripts" file="${ue.envconfig.path}/add_identityiq_extensions.mysql" />
+
 							<loadfile property="ue.ap.set" srcfile="${ue.envconfig.path}/components.txt">      
 							     <filterchain>       
 							       <linecontainsregexp>

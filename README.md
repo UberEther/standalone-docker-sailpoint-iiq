@@ -86,8 +86,6 @@ Download the latest Accelerator Pack from Compass found here: https://community.
 Create a new directory called `ap` in ./ssb/components/iiq8.0/base and copy Accelerator_Pack-8.0.zip into this directory
 Rename Accelerator_Pack-8.0.zip to Accelerator_Pack-8.0-2.2.0.zip
 
-unzip Accelerator_Pack-8.0-2.2.0.zip "web/WEB-INF/*" -d "../../../../build/web/WEB-INF"
-
 Run the `bootstrap.sh build` script and you're good to go.
 
 ###NOTE: From the Accelerator Pack 8.0 Release Notes

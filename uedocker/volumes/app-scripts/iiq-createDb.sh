@@ -55,8 +55,13 @@ if [ "$DBS" != "identityiq"  ]; then
     for SCRIPT_FILE in "${CREATION_SCRIPTS[@]}"; do
         echo "###############################"
         if [ ! -f "${SCRIPT_FILE}" ]; then
-            echo "#### ERROR: File not found: ${SCRIPT_FILE}"
-            exit 1
+			if [ ! -f "/ue/iiq/scripts/add_identityiq_extensions.mysql" ]; then
+				echo "#### NOTICE: Accelerator Pack Extensions Purposefully Not Loaded"
+				exit 0
+			else
+				echo "#### ERROR: File not found: ${SCRIPT_FILE}"
+            	exit 1
+			fi
         fi
         echo "#### `md5sum ${SCRIPT_FILE}`"
         mysql -h"${MYSQL_HOST}" < "${SCRIPT_FILE}" || onFailure
@@ -73,12 +78,8 @@ else
     for SCRIPT_FILE in "${UPDATE_SCRIPTS[@]}"; do
         echo "###############################"
         if [ ! -f "${SCRIPT_FILE}" ]; then
-			if [ ! -f "/ue/iiq/scripts/add_identityiq_extensions.mysql" ]; then
-				echo "#### NOTICE: Accelerator Pack Extensions Not Loaded"
-			else
-				echo "#### ERROR: File not found: ${SCRIPT_FILE}"
-            	exit 1
-			fi
+			echo "#### ERROR: File not found: ${SCRIPT_FILE}"
+            exit 1
         fi
         echo "#### `md5sum ${SCRIPT_FILE}`"
         mysql -f -h"${MYSQL_HOST}" < "${SCRIPT_FILE}" || onFailure
