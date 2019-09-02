@@ -126,9 +126,10 @@
 									   <regexp pattern="^ap.*"/>
 							       </linecontainsregexp>      
 							     </filterchain>   
-							</loadfile>							
+							</loadfile>
+							
 							<if>
-								<contains string="ue.AccleratorPack.set" substring="ap"/>
+								<contains string="${ue.AccleratorPack.set}" substring="ap"/>
 								<then>
 									<echo>Accelerator Pack already added to components.txt</echo>
 								</then>
@@ -180,6 +181,7 @@
 	            <fileset dir="${ue.envconfig.path}">
 	                <exclude name="**/dev/**"/>
 	                <exclude name="**/archive/**"/>
+					<exclude name="*.mysql"/>
 	            </fileset>
 	        </copy>
 		
