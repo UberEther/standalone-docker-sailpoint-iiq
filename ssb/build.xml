@@ -120,15 +120,15 @@
 							
 							<copy todir="../uedocker/volumes/app-scripts" file="${ue.envconfig.path}/add_identityiq_extensions.mysql" />
 
-							<loadfile property="ue.ap.set" srcfile="${ue.envconfig.path}/components.txt">      
+							<loadfile property="ue.AccleratorPack.set" srcfile="${ue.envconfig.path}/components.txt">      
 							     <filterchain>       
 							       <linecontainsregexp>
 									   <regexp pattern="^ap.*"/>
 							       </linecontainsregexp>      
 							     </filterchain>   
-							</loadfile>
+							</loadfile>							
 							<if>
-								<contains string="$ue.ap.set" substring="ap"/>
+								<contains string="ue.AccleratorPack.set" substring="ap"/>
 								<then>
 									<echo>Accelerator Pack already added to components.txt</echo>
 								</then>
