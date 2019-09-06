@@ -117,8 +117,6 @@
 			            <try>
 			                <echo>Overlaying Object Properties XML files onto SSB</echo>
 			                <unzip dest="components/ap" src="components/iiq${IIQVersion}/base/ap/${acceleratorPackZipName}" />	
-							
-							<copy todir="../uedocker/volumes/app-scripts" file="${ue.envconfig.path}/add_identityiq_extensions.mysql" />
 
 							<loadfile property="ue.AccleratorPack.set" srcfile="${ue.envconfig.path}/components.txt">      
 							     <filterchain>       
@@ -187,136 +185,6 @@
 		
     </target>
 
-    <!-- extenddb - extends IIQ schema for Accelerator Pack -->	
-    <target name="extenddb" description="extends the DB schema per hbm customizations. requires alignment with objectConfig.">
-        <if>
-            <equals arg1="${usingDbSchemaExtensions}" arg2="true"/>
-            <then>
-                <echo>extending db schema via "iiq extendedSchema"</echo>
-                <if>
-                    <isset property="is-windows"/>
-                    <then>
-                        <echo>running windows flavor</echo>
-                        <exec executable="cmd.exe" dir="${ue.build.workdir}/build/extract/WEB-INF/bin">
-                            <arg value="/c"/>
-                            <arg value="iiq.bat"/>
-                            <arg value="extendedSchema"/>
-                        </exec>
-                    </then>
-                    <else>
-                        <echo>running *nix flavor</echo>
-                        <property name="iiq.script.nix.perms" value="ug+rx"/>
-                        <echo>setting execute permissions on "iiq" script to ${iiq.script.nix.perms} first</echo>
-                        <chmod file="${ue.build.workdir}/build/extract/WEB-INF/bin/iiq" perm="${iiq.script.nix.perms}"/>
-                        <exec executable="./iiq" dir="${ue.build.workdir}/build/extract/WEB-INF/bin">
-                            <arg value="extendedSchema"/>
-                        </exec>
-                    </else>
-                </if>
-
-                <property name="schemaExtensionFile.default" value="${ue.build.workdir}/build/extract/WEB-INF/database/add_identityiq_extensions.${db.type}"/>
-                <property name="schemaExtensionFile.tokenReplaced" value="${schemaExtensionFile.default}.tokenReplaced"/>
-                <echo>created all flavors of extentions files, but our concern is: ${schemaExtensionFile.default}</echo>
-
-                <!-- create our copy to actually edit -->
-                <copy 
-                    overwrite="true"
-                    file="${schemaExtensionFile.default}"
-                    tofile="${schemaExtensionFile.tokenReplaced}"/>
-
-                <!-- do the DB file hacking -->
-                <if>
-                    <equals arg1="${db.type}" arg2="mysql"/>
-                    <then>
-                        <!-- mess with the alter table stmts - whitespace is relevant here! -->
-                        <replace 
-                            file="${schemaExtensionFile.tokenReplaced}"
-                            casesensitive="false"
-                            token=" table identityiq."
-                            value=" table  ${db.name}."/>
-                        <!-- mess with index stmts - whitespace is relevant here!-->
-                        <replace 
-                            file="${schemaExtensionFile.tokenReplaced}"
-                            casesensitive="false"
-                            token=" on identityiq."
-                            value=" on  ${db.name}."/>
-                        <!-- mess with use stmt -->
-                        <replace 
-                            file="${schemaExtensionFile.tokenReplaced}"
-                            casesensitive="false"
-                            token="USE identityiq;"
-                            value="USE  ${db.name};"/>
-                        <!-- inject a comment at end so we tatoo our target in SSB did this -->
-                        <concat destfile="${schemaExtensionFile.tokenReplaced}" append="true">
-                            -- created this DDL file with extenddb SSB target
-                        </concat>
-                    </then>
-                </if>
-
-                <if>
-                    <equals arg1="${db.type}" arg2="sqlserver"/>
-                    <then>
-                        <!-- mess with the alter table stmts - whitespace is relevant here! -->
-                        <replace 
-                            file="${schemaExtensionFile.tokenReplaced}"
-                            casesensitive="false"
-                            token=" table identityiq."
-                            value=" table  ${db.name}."/>
-                        <!-- mess with index stmts - whitespace is relevant here!-->
-                        <replace 
-                            file="${schemaExtensionFile.tokenReplaced}"
-                            casesensitive="false"
-                            token=" on identityiq."
-                            value=" on  ${db.name}."/>
-                        <!-- mess with use stmt - whitespace is relevant here! -->
-                        <replace 
-                            file="${schemaExtensionFile.tokenReplaced}"
-                            casesensitive="false"
-                            token="USE identityiq"
-                            value="USE  ${db.name}"/>
-                        <!-- get rid of "go" as it doesn't work - "go" is used for SQL Server mgmt studio, but not for this type of stuff. -->
-                    	<replace
-                            file="${schemaExtensionFile.tokenReplaced}"
-                            token="GO"
-                            value=";"
-                    		casesensitive="true"/>
-                        <!-- inject a comment at end so we tatoo our target in SSB did this -->
-                        <concat destfile="${schemaExtensionFile.tokenReplaced}" append="true">
-                            -- created this DDL file with extenddb SSB target
-                        </concat>
-                    </then>
-                </if>
-
-                <!-- need to work in oracle and db2 later -->
-                <if>
-                    <equals arg1="${db.type}" arg2="oracle"/>
-                    <then>
-                        <echo>${db.type} not handled here at this time!</echo>
-                        <fail></fail>
-                    </then>
-                </if>
-
-                <if>
-                    <equals arg1="${db.type}" arg2="db2"/>
-                    <then>
-                        <echo>${db.type} not handled here at this time!</echo>
-                        <fail></fail>
-                    </then>
-                </if>
-
-                <!-- regardless of db type section here -->
-                <echo>our edited file will be: ${schemaExtensionFile.tokenReplaced}</echo>
-
-                <!-- run the actual sql script 
-                <iiq.sql.upgrade sql.file="${schemaExtensionFile.tokenReplaced}"/> -->
-            </then>
-            <else>
-                <echo>usingDbSchemaExtensions is false - ignoring extenddb target</echo>
-            </else>
-        </if>    
-    </target>
-	
-
     <!-- buildWar - Calls the SailPoint SSB to build the war
                     Sets the SPTARGET env variable to override the SSB target
     -->
@@ -361,25 +229,7 @@
         <echo message="******************************************" />
         <copy tofile="${ue.release.war}" file="${ue.build.war}" />
         <copy tofile="${ue.release.war.md5}" file="${ue.build.war.md5}" />
-		
-        <if>
-            <equals arg1="${usingDbSchemaExtensions}" arg2="true"/>
-			<then>
-				<antcall target="extenddb"/>
-				<zip destfile="${ue.release.war}" update="true"> 
-					<mappedresources>
-			            <fileset dir="${ue.build.workdir}/build/extract/WEB-INF/database">
-			                <include name="*.db2" />
-			                <include name="*.sqlserver" />
-			                <include name="*.oracle" />
-			                <include name="*.mysql" />
-						</fileset> 
-						<globmapper from="*" to="database/*" />
-					</mappedresources>
-				</zip> 
-			</then>
-		</if>
-		
+
         <copy todir="${ue.build.releasedir}/database">
           <fileset dir="${ue.build.workdir}/build/extract/WEB-INF/database">
               <include name="*.db2" />
