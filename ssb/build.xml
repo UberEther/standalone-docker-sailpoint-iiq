@@ -96,6 +96,12 @@
 			                <property name="acceleratorPackZipName" value="Accelerator_Pack-${acceleratorPackVersion}.zip"/>
 			            </then>
 			        </if>
+			        <if>
+			            <available file="components/iiq${IIQVersion}/base/ap/Accelerator_Pack-${IIQVersion}.zip"/>
+			            <then>
+			                <property name="acceleratorPackZipName" value="Accelerator_Pack-${IIQVersion}.zip"/>
+			            </then>
+			        </if>
 
 			        <if>
 			            <or>
@@ -179,7 +185,6 @@
 	            <fileset dir="${ue.envconfig.path}">
 	                <exclude name="**/dev/**"/>
 	                <exclude name="**/archive/**"/>
-					<exclude name="*.mysql"/>
 	            </fileset>
 	        </copy>
 		

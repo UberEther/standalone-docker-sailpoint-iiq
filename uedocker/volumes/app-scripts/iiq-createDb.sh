@@ -10,7 +10,7 @@ SP_HOME="${SP_HOME:-/ue/iiq/tomcat/webapps/ue}"
 MYSQL_HOST="localhost"
 
 CREATION_SCRIPTS=(
-        "${SP_HOME}/database/create_identityiq_tables-8.0.mysql"
+        "${SP_HOME}/WEB-INF/database/create_identityiq_tables-8.0.mysql"
     )
 
 UPDATE_SCRIPTS=(
