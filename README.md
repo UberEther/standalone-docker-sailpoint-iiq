@@ -83,8 +83,13 @@ usingDbSchemaExtensions=true
 
 Download the latest Accelerator Pack from Compass found here: https://community.sailpoint.com/t5/Accelerator-Pack/Accelerator-Pack/ta-p/77961
 
-Create a new directory called `ap` in ./ssb/components/iiq8.0/base and copy Accelerator_Pack-8.0.zip into this directory
+Accelerator_Pack-8.0.zip into the ./ssb/components/iiq8.0/base directory
 Rename Accelerator_Pack-8.0.zip to Accelerator_Pack-8.0-2.2.0.zip
+
+Edit the ./ssb/envconfig/local-dev/components.txt and add 'ap' to the second line of the file. It should have two lines when you are complete:
+
+iiq8.0
+ap
 
 Run the `bootstrap.sh build` script and you're good to go.
 
