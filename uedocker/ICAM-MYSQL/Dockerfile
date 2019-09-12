@@ -1,5 +1,5 @@
-FROM mysql:5.7
-MAINTAINER Michael Samblanet <samblanetm@uberether.com>
+FROM mysql:5
+MAINTAINER Matt Topper <matt@uberether.com>
 
 ENV MYSQL_ROOT_PASSWORD=root
 
@@ -73,6 +73,34 @@ RUN mkdir -m 6750 /ue/iiq/tomcat && \
     mkdir -m 6750 /ue/iiq/tomcat/webapps && \
     mkdir -m 6750 /ue/iiq/tomcat/webapps/ue && \
     ln -sfT /ue/iiq/tomcat/webapps/ue/WEB-INF /ue/iiq/WEB-INF
+
+#
+# INSTALLING JAVA FOR BUILDING SCHEMA EXTENSIONS
+#
+RUN set -ex; \
+# deal with slim variants not having man page directories (which causes "update-alternatives" to fail)
+	if [ ! -d /usr/share/man/man1 ]; then \
+		mkdir -p /usr/share/man/man1; \
+	fi; \
+	\
+	apt-get update; \
+	apt-get install -y \
+		openjdk-8-jre-headless \
+		ca-certificates-java \
+		; \
+	rm -rf /var/lib/apt/lists/*; \
+	\
+	# verify that "docker-java-home" returns what we expect
+	[ "$(readlink -f "$JAVA_HOME")" = "$(docker-java-home)" ]; \
+	\
+# update-alternatives so that future installs of other OpenJDK versions don't change /usr/bin/java
+	update-alternatives --get-selections | awk -v home="$(readlink -f "$JAVA_HOME")" 'index($3, home) == 1 { $2 = "manual"; print | "update-alternatives --set-selections" }'; \
+# ... and verify that it actually worked for one of the alternatives we care about
+	update-alternatives --query java | grep -q 'Status: manual'
+
+# see CA_CERTIFICATES_JAVA_VERSION notes above
+RUN /var/lib/dpkg/info/ca-certificates-java.postinst configure
+
 #
 # Specify our exposed resources
 #

@@ -73,6 +73,31 @@ This script will build the application war file again, download the baseline doc
 
 In about 5 minutes you'll have an entire running set of docker containers with IIQ 8.0 deployed in it ready to run.
 
+## If you want to run Accelerator Pack 2.2.0 with IdentityIQ 8.0
+
+Modify the build.properties file in ./ssb/envconfig/local-dev and add the following two lines:
+
+deployAcceleratorPack=true
+acceleratorPackVersion=2.2.0 {change your version number if necessary}
+usingDbSchemaExtensions=true
+
+Download the latest Accelerator Pack from Compass found here: https://community.sailpoint.com/t5/Accelerator-Pack/Accelerator-Pack/ta-p/77961
+
+Accelerator_Pack-8.0.zip into the ./ssb/components/iiq8.0/base directory
+Rename Accelerator_Pack-8.0.zip to Accelerator_Pack-8.0-2.2.0.zip
+
+Edit the ./ssb/envconfig/local-dev/components.txt and add 'ap' to the second line of the file. It should have two lines when you are complete:
+
+iiq8.0
+ap
+
+Run the `bootstrap.sh build` script and you're good to go.
+
+###NOTE: From the Accelerator Pack 8.0 Release Notes
+After installation and upon startup, there may be some errors similar to: 
+property x is not defined in ObjectConfig 
+These are innocuous errors that will not affect the functionality of the Accelerator Pack or IdentityIQ.
+
 # Usage
 
 To make your life easier, you can import the certificate from ICAM-HTTPD/local-dev.cer into your browser as a trusted certificate.
