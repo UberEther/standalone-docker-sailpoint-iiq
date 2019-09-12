@@ -70,7 +70,7 @@ if [ "$DBS" != "identityiq"  ]; then
         echo "###############################"
         if [ ! -f "${SCRIPT_FILE}" ]; then
 			echo "#### ERROR: File not found: ${SCRIPT_FILE}"
-		exit 1
+           	exit 1
         fi
         echo "#### `md5sum ${SCRIPT_FILE}`"
         mysql -h"${MYSQL_HOST}" < "${SCRIPT_FILE}" || onFailure

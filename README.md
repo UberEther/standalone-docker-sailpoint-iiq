@@ -94,8 +94,8 @@ ap
 Run the `bootstrap.sh build` script and you're good to go.
 
 ###NOTE: From the Accelerator Pack 8.0 Release Notes
-After installation and upon startup, there may be some errors similar to:
-property x is not defined in ObjectConfig
+After installation and upon startup, there may be some errors similar to: 
+property x is not defined in ObjectConfig 
 These are innocuous errors that will not affect the functionality of the Accelerator Pack or IdentityIQ.
 
 # Usage

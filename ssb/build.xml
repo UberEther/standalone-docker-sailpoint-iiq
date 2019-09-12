@@ -160,16 +160,15 @@
         </for>
 		
 
-
+			
 	        <echo message="****** Copying envconfig" />
 	        <copy todir="${ue.build.workdir}" overwrite="true">
 	            <fileset dir="${ue.envconfig.path}">
 	                <exclude name="**/dev/**"/>
 	                <exclude name="**/archive/**"/>
-					<exclude name="*.mysql"/>
 	            </fileset>
 	        </copy>
-
+		
     </target>
 
     <!-- buildWar - Calls the SailPoint SSB to build the war
@@ -191,7 +190,7 @@
             <target name="war" />
         </ant>
         -->
-
+			
         <java classname="org.apache.tools.ant.launch.Launcher"
               fork="true"
               failonerror="true"
