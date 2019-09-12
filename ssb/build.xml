@@ -123,25 +123,6 @@
 			            <try>
 			                <echo>Overlaying Object Properties XML files onto SSB</echo>
 			                <unzip dest="components/ap" src="components/iiq${IIQVersion}/base/ap/${acceleratorPackZipName}" />	
-
-							<loadfile property="ue.AccleratorPack.set" srcfile="${ue.envconfig.path}/components.txt">      
-							     <filterchain>       
-							       <linecontainsregexp>
-									   <regexp pattern="^ap.*"/>
-							       </linecontainsregexp>      
-							     </filterchain>   
-							</loadfile>
-							
-							<if>
-								<contains string="${ue.AccleratorPack.set}" substring="ap"/>
-								<then>
-									<echo>Accelerator Pack already added to components.txt</echo>
-								</then>
-								<else>
-									<echo>Adding Accelerator Pack to components.txt</echo>
-									<echo file="${ue.envconfig.path}/components.txt" append="true">${line.separator}ap</echo>
-								</else>
-							</if>
 			            </try>
 			            <catch>
 			                <echo>Critical failure while extracting Accelerator Pack zip file.</echo>
