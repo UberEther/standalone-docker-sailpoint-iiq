@@ -1,0 +1,11 @@
+# Add any directories, files, or patterns you don't want to be tracked by version control
+/ssb/build
+/ssb/release
+/ssb/build-lib/ant
+**/.DS_Store
+/dist/*.war
+/dist/*.war.MD5
+/release
+/.vscode
+*.zip
+*.jar

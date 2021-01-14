@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.ue.sailpoint.build" default="war">
+
+    <!--
+        Default is to build local-dev.  To override target environment, add the
+        following to your ANT command line:
+           -Due.env=local-dev   (or whichever target you want)
+
+        Sample ANT command-lines:
+            Build local-dev war only:
+                ant war
+    -->
+
+    <!-- PUBLIC TARGETS -->
+    <target name="war" depends="buildWar" />
+
+    <!-- System environment -->
+    <property environment="env"/>
+
+    <!-- local-dev is default value - set from command line with -Due.env=FOO -->
+    <property name="ue.env" value="local-dev" />
+    <property name="ue.env.ssb" value="ssb-v6.1" />
+
+    <!-- Constants for where things are -->
+    <property name="ue.envconfig.path" value="./envconfig/${ue.env}" />
+    <property name="ue.build.workdir" location="./build/" />
+    <property name="ue.build.releasedir" location="./release/" />
+    <property name="ue.build.war" location="${ue.build.workdir}/build/deploy/identityiq.war" />
+    <property name="ue.build.war.md5" location="${ue.build.war}.MD5" />
+
+    <property name="ue.dist.releasedir" location="../release/" />
+
+    <!-- Location of libraries -->
+    <property name="ue.lib.antcontrib" location="build-lib/ant-contrib-1.0b3.jar" />
+
+    <!-- Load AntContrib -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${ue.lib.antcontrib}" />
+
+    <!-- loadConfig - Loads all configuration settings -->
+    <target name="loadConfig">
+        <echo message="Building using configuration: ${ue.env}" />
+
+        <property file="${ue.envconfig.path}/build.properties"/>
+        <property name="ue.release.warfilename" value="ue#${ue.env}-${IIQVersion}${IIQPatchLevel}.war" />
+        <property name="ue.release.war" location="${ue.build.releasedir}/${ue.release.warfilename}" />
+        <property name="ue.release.war.md5" location="${ue.release.war}.MD5" />
+    </target>
+
+    <!-- Clean - removes all files from the work directory -->
+    <target name="clean">
+        <echo message="Cleaning work folder" />
+
+        <mkdir dir="${ue.build.workdir}"/>
+        <mkdir dir="${ue.build.releasedir}"/>
+        <mkdir dir="${ue.dist.releasedir}"/>
+        <delete includeEmptyDirs="true" failonerror="true">
+            <fileset dir="${ue.build.workdir}" includes="**" defaultexcludes="false" />
+            <fileset dir="${ue.build.releasedir}" includes="**" defaultexcludes="false" />
+        </delete>
+    </target>
+
+    <!-- copyComponents - Loads the list of components from the env config and
+                          copies all the component folders to the work folder
+                          If files conflict, last component wins.
+    -->
+    <target name="copyComponents" depends="loadConfig">
+        <echo message="******************************************" />
+        <echo message="*** Copying Components" />
+        <echo message="******************************************" />
+
+        <echo message="****** Copying binaries" />
+        <unzip src="components/${ue.env.ssb}/${ue.env.ssb}.zip" dest="${ue.build.workdir}" overwrite="true"/>
+        <echo message="****** Removing example scripts" />
+        <delete dir="${ue.build.workdir}/scripts" includes="build.custom*" />
+
+
+        <copy todir="${ue.build.workdir}" file="${ue.envconfig.path}/components.txt" />
+        <fixcrlf srcdir="${ue.build.workdir}" includes="components.txt" eof="remove" />
+        <loadfile property="ue.components" srcFile="${ue.build.workdir}/components.txt" />
+        <for list="${ue.components}" param="component" delimiter="${line.separator}">
+            <sequential>
+                <if>
+                    <!-- Ignore # or // comment lines -->
+                    <and>
+                        <matches string="@{component}" pattern="^\s*[^\s].*$"/>
+                        <not>
+                            <matches string="@{component}" pattern="^\s*((#)|(//)).*$"/>
+                        </not>
+                    </and>
+                    <then>
+                        <echo message="****** Copying Component: [@{component}]" />
+                        <copy todir="${ue.build.workdir}" overwrite="true">
+                            <fileset dir="components/@{component}">
+                                <exclude name="**/dev/**"/>
+                                <exclude name="**/archive/**"/>
+                                <exclude name="**/*.generated.xml"/>
+                            </fileset>
+                        </copy>
+                    </then>
+                </if>
+            </sequential>
+        </for>
+
+        <echo message="****** Copying envconfig" />
+        <copy todir="${ue.build.workdir}" overwrite="true">
+            <fileset dir="${ue.envconfig.path}">
+                <exclude name="**/dev/**"/>
+                <exclude name="**/archive/**"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- buildWar - Calls the SailPoint SSB to build the war
+                    Sets the SPTARGET env variable to override the SSB target
+    -->
+    <target name="buildWar" depends="loadConfig,clean,copyComponents">
+        <var name="env.SPTARGET" value="${ue.env}"/> <!-- this is a bit of a hack to set an environment variable - but cannot find another way to inject into the child ANT's environment -->
+
+        <echo message="******************************************" />
+        <echo message="*** Building war using SSB script with SPTARGET of: ${env.SPTARGET}" />
+        <echo message="******************************************" />
+
+        <!-- With SSB2, changed this to a forked Java invoke due to the XML Tokenization not
+             working when using a child ant call
+             See http://ant.apache.org/manual/running.html#viajava
+        -->
+        <!--
+        <ant dir="${ue.build.workdir}" antfile="build.xml" inheritall="false" fork="true">
+            <target name="war" />
+        </ant>
+        -->
+        <java classname="org.apache.tools.ant.launch.Launcher"
+              fork="true"
+              failonerror="true"
+              dir="${ue.build.workdir}"
+              timeout="600000"
+              taskname="SSB">
+            <classpath>
+                <pathelement location="${ant.home}/lib/ant-launcher.jar"/>
+            </classpath>
+            <env key="SPTARGET" value="${ue.env}" />
+            <arg value="war"/>
+        </java>
+
+        <loadfile property="ue.release.war.md5" srcFile="${ue.build.war.md5}"/>
+
+        <echo message="******************************************" />
+        <echo message="*** Copying built war to: ${ue.release.war}" />
+        <echo message="******************************************" />
+        <echo message="*** MD5 of war: ${ue.release.war.md5}" />
+        <echo message="******************************************" />
+        <copy tofile="${ue.release.war}" file="${ue.build.war}" />
+        <copy tofile="${ue.release.war.md5}" file="${ue.build.war.md5}" />
+        <copy todir="${ue.build.releasedir}/database">
+          <fileset dir="${ue.build.workdir}/build/extract/WEB-INF/database">
+              <include name="*.db2" />
+              <include name="*.sqlserver" />
+              <include name="*.oracle" />
+              <include name="*.mysql" />
+          </fileset>
+        </copy>
+    </target>
+
+    <target name="package" depends="loadConfig,buildWar">
+        <!-- Make a distribution zip -->
+        <zip destfile="${ue.dist.releasedir}/ue-${ue.env}-${ue.dist.ver}.zip">
+            <zipfileset dir="${ue.build.releasedir}" prefix="" />
+            <zipfileset dir="../dist" prefix="" />
+            <zipfileset dir="../" includes="CHANGELOG.txt" prefix="" />
+        </zip>
+
+        <!-- Save the MD5 and SHA-256 of the zip -->
+        <checksum file="${ue.dist.releasedir}/ue-${ue.env}-${ue.dist.ver}.zip" algorithm="MD5" fileext=".MD5" forceOverwrite="yes"/>
+        <checksum file="${ue.dist.releasedir}/ue-${ue.env}-${ue.dist.ver}.zip" algorithm="SHA-256" fileext=".SHA256" forceOverwrite="yes"/>
+
+        <echo message="******************************************" />
+        <echo message="*** Distribution zip: ${ue.dist.releasedir}/ue-${ue.env}-${ue.dist.ver}.zip" />
+        <echo message="******************************************" />
+    </target>
+
+</project>
