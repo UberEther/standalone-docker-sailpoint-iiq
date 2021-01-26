@@ -1,5 +1,9 @@
-SailPoint IdentityIQ Dockerized
-================================
+SailPoint IdentityIQ Dockerized v2
+==================================
+
+# Migrating From v1 to v2
+
+If you were previously on v1, v2 has breaking changes. The `src` folder has been removed, along with the bootstrapping code that is used to move the binaries to the appropriate locations. Use the `SailPoint Binaries` instructions below to know where these files should be placed. If you are having trouble with the migration, you can backup the `ssb/envconfig` and `ssb/components` folders and place those folders in a fresh copy of this repository.
 
 # Prerequisites
 
@@ -131,6 +135,8 @@ Go to <http://dev.icam.local/ue/login.jsf> using an Internet browser.
 By default we have given Tomcat limited resources to keep the memory sizes down, so it may take a few minutes for the container to warm up and no longer throw a 500 error.
 
 ## MailHog
+
+A docker container for MailHog is also deployed and automatically configured in IdentityIQ.
 
 Go to <http://dev.icam.local:8025> using an Internet browser.
 
