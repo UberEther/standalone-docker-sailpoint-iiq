@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build.custom.ue-configuration">
+
+    <target name="post.expansion.hook">
+        <echo message="******************************************" />
+        <echo message="*** Setting web.xml Session Timeout to ${webXmlSessionTimeout}" />
+        <echo message="******************************************" />
+        <replaceregexp
+            file="${build}/extract/WEB-INF/web.xml"
+            match="&lt;session-timeout&gt;\s*[0-9]+\s*&lt;/session-timeout&gt;"
+            replace="&lt;session-timeout&gt;${webXmlSessionTimeout}&lt;/session-timeout&gt;"
+        />
+
+        <echo message="******************************************" />
+        <echo message="*** Modifying IIQ memory settings" />
+        <echo message="******************************************" />
+        <replaceregexp
+            file="${build}/extract/WEB-INF/bin/iiq"
+            match='JAVA_OPTS="-Xms128m -Xmx256m -Dsun.lang.ClassLoader.allowArraySyntax=true -Djava.awt.headless=true"'
+            replace='JAVA_OPTS="-Xms1024m -Xmx2048m -Dsun.lang.ClassLoader.allowArraySyntax=true -Djava.awt.headless=true"'
+        />
+
+        <echo message="******************************************" />
+        <echo message="*** Generating DDL" />
+        <echo message="******************************************" />
+
+        <chmod file="${build}/extract/WEB-INF/bin/iiq" perm="+x"/>
+
+        <exec dir="${build}/extract/WEB-INF/bin"
+              failonerror="true"
+              executable="cmd"
+              osfamily="windows">
+              <arg line="/c iiq.bat schema" />
+        </exec>
+        <exec dir="${build}/extract/WEB-INF/bin"
+              failonerror="true"
+              executable="cmd"
+              osfamily="windows">
+              <arg line="/c iiq.bat extendedSchema" />
+        </exec>
+        <exec dir="${build}/extract/WEB-INF/bin"
+              failonerror="true"
+              executable="bash"
+              osfamily="unix">
+              <arg line='-c "./iiq schema"' />
+        </exec>
+        <exec dir="${build}/extract/WEB-INF/bin"
+              failonerror="true"
+              executable="bash"
+              osfamily="unix">
+              <arg line='-c "./iiq extendedSchema"' />
+        </exec>
+
+        <if>
+          <isfalse value="${ue.keepDevDocs}" />
+          <then>
+            <echo message="******************************************" />
+            <echo message="*** Removing docs" />
+            <echo message="******************************************" />
+            <delete dir="${build}/extract/doc" />
+          </then>
+        </if>
+
+        <echo message="******************************************" />
+        <echo message="*** Removing DB, tutorials, *.zip, unneeded schemas" />
+        <echo message="******************************************" />
+        <delete dir="${build}/extract/database" />
+        <delete dir="${build}/extract/tutorials" />
+        <delete dir="${build}/extract/integration" />
+        <!-- Only need bin files for RHEL64 -->
+        <delete dir="${build}/extract/WEB-INF/bin/aix32" />
+        <delete dir="${build}/extract/WEB-INF/bin/aix64" />
+        <!--<delete dir="${build}/extract/WEB-INF/bin/rhel64" />-->
+        <delete dir="${build}/extract/WEB-INF/bin/rhel32" />
+        <delete dir="${build}/extract/WEB-INF/bin/sol32" />
+        <delete dir="${build}/extract/WEB-INF/bin/sol64" />
+        <!--<delete dir="${build}/extract/WEB-INF/bin/win" /> -->
+        <delete dir="${build}/extract/WEB-INF/bin/win32" />
+        <delete dir="${build}/extract/WEB-INF/bin/win64" />
+        <delete>
+            <!-- Remove utility distributions -->
+            <fileset dir="${build}/extract" includes="*.zip" />
+            <!-- Remove distro provide schemas -->
+            <fileset dir="${build}/extract/WEB-INF/database/" includes="create_identityiq_tables-*" />
+            <fileset dir="${build}/extract/WEB-INF/database/" includes="drop_identityiq_tables-*" />
+            <!-- Remove any unneeded DB script files -->
+            <fileset dir="${build}/extract/WEB-INF/database/">
+              <!-- Remove all databases -->
+              <include name="**/*.db2" />
+              <include name="**/*.sqlserver" />
+              <include name="**/*.oracle" />
+              <include name="**/*.mysql" />
+              <!-- Except the selected type -->
+              <exclude name="**/*.${db.type}" />
+            </fileset>
+        </delete>
+
+    </target>
+
+    <target name="post.war.hook">
+        <echo message="******************************************" />
+        <echo message="*** Post-War Hook" />
+        <echo message="******************************************" />
+    </target>
+</project>

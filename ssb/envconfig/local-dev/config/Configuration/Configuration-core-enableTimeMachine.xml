@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<!--This is a way to artificially alter time in SailPoint.
+    The page can be accessed at https://dev.icam.local/ue/debug/timeMachine.jsf  -->
+<sailpoint>
+    <ImportAction name='merge'>
+        <Configuration name='SystemConfiguration'>
+            <Attributes>
+                <Map>
+                  <entry key="timeMachineEnabled" value="true"/>
+                </Map>
+            </Attributes>
+        </Configuration>
+    </ImportAction>
+</sailpoint>

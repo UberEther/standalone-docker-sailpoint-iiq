@@ -4,7 +4,7 @@
     <!--
         Default is to build local-dev.  To override target environment, add the
         following to your ANT command line:
-           -Due.env=local-build   (or whichever target you want)
+           -Due.env=local-dev   (or whichever target you want)
 
         Sample ANT command-lines:
             Build local-dev war only:
@@ -70,75 +70,17 @@
 
         <echo message="****** Copying binaries" />
         <unzip src="components/${ue.env.ssb}/${ue.env.ssb}.zip" dest="${ue.build.workdir}" overwrite="true"/>
-
         <echo message="****** Removing example scripts" />
         <delete dir="${ue.build.workdir}/scripts" includes="build.custom*" />
 
-		<echo message="****** Checking if Accelerator Pack is Enabled" />
-			<if>
-			    <equals arg1="${deployAcceleratorPack}" arg2="true"/>
-			    <then>
-			        <if>
-			            <available file="components/iiq${IIQVersion}/base/ap/Accelerator_Pack-${IIQVersion}-${acceleratorPackVersion}.zip"/>
-			            <then>
-			                <property name="acceleratorPackZipName" value="Accelerator_Pack-${IIQVersion}-${acceleratorPackVersion}.zip"/>
-			            </then>
-			        </if>
-			        <if>
-			            <available file="components/iiq${IIQVersion}/base/ap/Accelerator_Pack_${IIQVersion}-${acceleratorPackVersion}.zip"/>
-			            <then>
-			                <property name="acceleratorPackZipName" value="Accelerator_Pack_${IIQVersion}-${acceleratorPackVersion}.zip"/>
-			            </then>
-			        </if>
-			        <if>
-			            <available file="components/iiq${IIQVersion}/base/ap/Accelerator_Pack-${acceleratorPackVersion}.zip"/>
-			            <then>
-			                <property name="acceleratorPackZipName" value="Accelerator_Pack-${acceleratorPackVersion}.zip"/>
-			            </then>
-			        </if>
-			        <if>
-			            <available file="components/iiq${IIQVersion}/base/ap/Accelerator_Pack-${IIQVersion}.zip"/>
-			            <then>
-			                <property name="acceleratorPackZipName" value="Accelerator_Pack-${IIQVersion}.zip"/>
-			            </then>
-			        </if>
-
-			        <if>
-			            <or>
-			                <equals arg1="${acceleratorPackZipName}" arg2=""/>
-			                <not>
-			                    <isset property="acceleratorPackZipName"/>
-			                </not>
-			            </or>
-			            <then>
-			                <property name="critical.failure"
-			                          value="Could not find Accelerator Pack binaries for the specified Accelerator Pack version ${acceleratorPackVersion} and IdentityIQ version ${IIQVersion} in the /base/ap directory.
-			                          You can download these files from https://community.sailpoint.com "/>
-			                <fail message="${critical.failure}"/>
-			            </then>
-			        </if>
-
-
-			        <trycatch property="critical.failure">
-			            <try>
-			                <echo>Overlaying Object Properties XML files onto SSB</echo>
-			                <unzip dest="components/ap" src="components/iiq${IIQVersion}/base/ap/${acceleratorPackZipName}" />
-			            </try>
-			            <catch>
-			                <echo>Critical failure while extracting Accelerator Pack zip file.</echo>
-			                <fail message="${critical.failure}"/>
-			            </catch>
-			        </trycatch>
-
-			    </then>
-			</if>
 
         <copy todir="${ue.build.workdir}" file="${ue.envconfig.path}/components.txt" />
         <fixcrlf srcdir="${ue.build.workdir}" includes="components.txt" eof="remove" />
         <loadfile property="ue.components" srcFile="${ue.build.workdir}/components.txt" />
-		<for list="${ue.components}" param="component" delimiter="${line.separator}">
+        <for list="${ue.components}" param="component" delimiter="${line.separator}">
             <sequential>
                 <if>
+                    <!-- Ignore # or // comment lines -->
                     <and>
                         <matches string="@{component}" pattern="^\s*[^\s].*$"/>
                         <not>
@@ -158,17 +100,14 @@
                 </if>
             </sequential>
         </for>
-		
 
-			
-	        <echo message="****** Copying envconfig" />
-	        <copy todir="${ue.build.workdir}" overwrite="true">
-	            <fileset dir="${ue.envconfig.path}">
-	                <exclude name="**/dev/**"/>
-	                <exclude name="**/archive/**"/>
-	            </fileset>
-	        </copy>
-		
+        <echo message="****** Copying envconfig" />
+        <copy todir="${ue.build.workdir}" overwrite="true">
+            <fileset dir="${ue.envconfig.path}">
+                <exclude name="**/dev/**"/>
+                <exclude name="**/archive/**"/>
+            </fileset>
+        </copy>
     </target>
 
     <!-- buildWar - Calls the SailPoint SSB to build the war
@@ -190,7 +129,6 @@
             <target name="war" />
         </ant>
         -->
-			
         <java classname="org.apache.tools.ant.launch.Launcher"
               fork="true"
               failonerror="true"
@@ -201,8 +139,6 @@
                 <pathelement location="${ant.home}/lib/ant-launcher.jar"/>
             </classpath>
             <env key="SPTARGET" value="${ue.env}" />
-            <arg value="-logger"/>
-            <arg value="org.apache.tools.ant.listener.ProfileLogger"/>
             <arg value="war"/>
         </java>
 
@@ -215,7 +151,6 @@
         <echo message="******************************************" />
         <copy tofile="${ue.release.war}" file="${ue.build.war}" />
         <copy tofile="${ue.release.war.md5}" file="${ue.build.war.md5}" />
-
         <copy todir="${ue.build.releasedir}/database">
           <fileset dir="${ue.build.workdir}/build/extract/WEB-INF/database">
               <include name="*.db2" />
@@ -228,18 +163,18 @@
 
     <target name="package" depends="loadConfig,buildWar">
         <!-- Make a distribution zip -->
-        <zip destfile="${ue.dist.releasedir}/alm-${ue.env}-${ue.dist.ver}.zip">
+        <zip destfile="${ue.dist.releasedir}/ue-${ue.env}-${ue.dist.ver}.zip">
             <zipfileset dir="${ue.build.releasedir}" prefix="" />
             <zipfileset dir="../dist" prefix="" />
             <zipfileset dir="../" includes="CHANGELOG.txt" prefix="" />
         </zip>
 
         <!-- Save the MD5 and SHA-256 of the zip -->
-        <checksum file="${ue.dist.releasedir}/alm-${ue.env}-${ue.dist.ver}.zip" algorithm="MD5" fileext=".MD5" forceOverwrite="yes"/>
-        <checksum file="${ue.dist.releasedir}/alm-${ue.env}-${ue.dist.ver}.zip" algorithm="SHA-256" fileext=".SHA256" forceOverwrite="yes"/>
+        <checksum file="${ue.dist.releasedir}/ue-${ue.env}-${ue.dist.ver}.zip" algorithm="MD5" fileext=".MD5" forceOverwrite="yes"/>
+        <checksum file="${ue.dist.releasedir}/ue-${ue.env}-${ue.dist.ver}.zip" algorithm="SHA-256" fileext=".SHA256" forceOverwrite="yes"/>
 
         <echo message="******************************************" />
-        <echo message="*** Distribution zip: ${ue.dist.releasedir}/alm-${ue.env}-${ue.dist.ver}.zip" />
+        <echo message="*** Distribution zip: ${ue.dist.releasedir}/ue-${ue.env}-${ue.dist.ver}.zip" />
         <echo message="******************************************" />
     </target>
 

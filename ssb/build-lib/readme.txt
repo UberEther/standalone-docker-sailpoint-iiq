@@ -1,0 +1,1 @@
+This directory contains libraries required by ANT to run build tasks.

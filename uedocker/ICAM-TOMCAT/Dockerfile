@@ -1,5 +1,4 @@
 FROM tomcat:9.0-jre8
-MAINTAINER Michael Samblanet <samblanetm@uberether.com>
 
 #
 # SETUP TIME ZONE
