@@ -5,12 +5,21 @@
 
 #shopt -s extglob
 
-# @todo Work out way to detect it...
-IIQ_VERSION=8.0
+PROPERTIES_FILE="../ssb/envconfig/local-dev/build.properties"
+IIQ_VERSION=$(grep "IIQVersion" ${PROPERTIES_FILE} | cut -d '=' -f2)
+PATCH_LEVEL=$(grep "IIQPatchLevel" ${PROPERTIES_FILE} | cut -d '=' -f2)
 
-WAR_PATH="./ue#local-dev-${IIQ_VERSION}.war"
-if [ ! -f "${WAR_PATH}" ]; then
-    WAR_PATH="../ssb/release/ue#local-dev-${IIQ_VERSION}.war"
+if [[ ! -z "${PATCH_LEVEL}" ]]
+then
+    IIQ_VERSION=$(echo ${IIQ_VERSION}${PATCH_LEVEL} | xargs)
+else
+    IIQ_VERSION=$(echo ${IIQ_VERSION} | xargs)
+fi
+
+WAR_PATH="../ssb/release/ue#local-dev-${IIQ_VERSION}.war"
+
+if [ ! -z "$2" ]; then
+    WAR_PATH="../ssb/release/ue#$2-${IIQ_VERSION}.war"
 fi
 
 set -o pipefail
@@ -36,8 +45,15 @@ if [ "$1" == "build" ]; then
         onFailure
     fi
     pushd ../ssb
-    START_BUILD="$(date)"
+    START_BUILD="$2 $(date)"
+    if [ ! -z "$2" ]
+    then
+        echo "#### Running build [$2]"
+        ./build.sh -Due.env="$2"
+    else
+        echo "#### Running build [default]"
     ./build.sh
+    fi
     END_BUILD="$(date)"
     popd
     if [ ! -f "${WAR_PATH}" ]; then
@@ -49,10 +65,14 @@ fi
 echo "#### Unzipping release"
 unzip -q "${WAR_PATH}" -d volumes/app-ue || onFailure
 
+echo '#### Setting execute permissions on iiq console'
+chmod +x volumes/app-ue/WEB-INF/bin/iiq
+
 echo "#### Creating new containers"
 START_CREATE="$(date)"
 ./create.sh || onFailure
 END_CREATE="$(date)"
+END_BOOTSTRAP="$(date)"
 
 echo "####"
 echo "####"
@@ -63,6 +83,6 @@ echo "#### End build:       ${END_BUILD}"
 echo "#### (unzip war)"
 echo "#### Start create:    ${START_CREATE}"
 echo "#### End create:      ${END_CREATE}"
-echo "#### End bootstrap:   ${END_CREATE}"
+echo "#### End bootstrap:   ${END_BOOTSTRAP}"
 echo "####"
 echo "####"

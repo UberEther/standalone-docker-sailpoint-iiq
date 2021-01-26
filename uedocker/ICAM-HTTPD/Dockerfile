@@ -1,5 +1,4 @@
 FROM httpd:2.4
-MAINTAINER Michael Samblanet <samblanetm@uberether.com>
 
 #
 # SETUP TIME ZONE

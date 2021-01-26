@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<sailpoint>
+  <ImportAction name='merge'>
+    <Configuration name='SystemConfiguration'>
+      <Attributes>
+        <Map>
+          <entry key="helpEmail" value="help@dev.icam.local"/>
+          <entry key="defaultEmailFromAddress" value="iiq@dev.icam.local"/>
+          <entry key="defaultEmailHost" value="mail" />
+          <entry key="defaultEmailPort" value="1025" />
+          <entry key="emailNotifierType" value="smtp" />
+          <entry key="suppressDuplicateEmails">
+            <value>
+              <Boolean>false</Boolean>
+            </value>
+          </entry>
+        </Map>
+      </Attributes>
+    </Configuration>
+  </ImportAction>
+</sailpoint>

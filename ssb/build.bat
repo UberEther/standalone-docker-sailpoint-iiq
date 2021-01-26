@@ -10,11 +10,10 @@ rem
 
 if EXIST build-lib\ant GOTO RUN_SSB
 
-echo "Unzipping Ant from SSBv6"
+echo "Unzipping Ant from SSB"
 mkdir t
-powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('components\ssb-v6\ssb-v6.zip', 't'); }"
+powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('components\ssb-v6.1\ssb-v6.1.zip', 't'); }"
 move t\lib\ant build-lib\
-move t\lib\ant-contrib* build-lib\
 rmdir /S /Q t
 
 mv build-lib/lib/ant build-lib

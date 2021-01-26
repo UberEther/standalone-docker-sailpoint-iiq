@@ -3,8 +3,8 @@
 /ssb/release
 /ssb/build-lib/
 
-/ssb/components/ap
-/ssb/components/ssb**/*.zip
-/ssb/components/iiq**/*.zip
-/src/*ssb*.zip
-/src/*identityiq*.zip
+/dist/*.war
+/dist/*.war.MD5
+/release
+*.zip
+*.jar

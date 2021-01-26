@@ -123,8 +123,6 @@ if [ -d "${IIQ_FOLDER}/tomcat/webapps/ue/WEB-INF/ue-plugins/install" ]; then
     done
 fi
 
-#echo "rule ue-core-runPostConfigRules" >> "${SCRIPT_FILE}"
-
 runuser -s /bin/bash -c "JAVA_HOME=${IIQ_FOLDER}/java ${SP_HOME}/WEB-INF/bin/iiq console" identityiq < "${SCRIPT_FILE}" || onFailure
 printf "\n"
 
