@@ -49,7 +49,6 @@ function onFailure {
 export LOGFILE="${LOG_FOLDER}/$(basename $SCRIPT_FULLPATH)-$(date +%Y-%m-%d-%H.%M.%S).log"
 if [ ! -d "$(dirname ${LOGFILE})" ]; then
     echo "Log path not found: $(dirname ${LOGFILE})"
-    echo "Was $(dirname $SCRIPT_FULLPATH)/ue-bootstrap.sh run?"
     exit 96
 fi
 
