@@ -8,4 +8,4 @@
 /release
 /.vscode
 *.zip
-*.jar
+/ssb/components/iiq*/**/*.jar
