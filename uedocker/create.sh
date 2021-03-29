@@ -29,12 +29,13 @@ echo "#### Start DB container"
 docker-compose up -d db || onFailure
 
 echo "#### Run DB Script"
-DB_CONTAINER_NAME=$(docker-compose ps db | tail -n +3 | awk '{ print $1 }')
-${WINPTY_BIN} docker exec -it --user root ${DB_CONTAINER_NAME} bash -c 'source /ue/iiq/scripts/iiq-createDb.sh' || onFailure
+DB_CONTAINER_ID=$(docker-compose ps -q db)
+${WINPTY_BIN} docker exec -it --user root ${DB_CONTAINER_ID} bash -c 'source /ue/iiq/scripts/iiq-createDb.sh' || onFailure
 
 echo "#### Start All containers"
 docker-compose up -d || onFailure
 
 echo "#### Run config import"
-APP_CONTAINER_NAME=$(docker-compose ps app | tail -n +3 | awk '{ print $1 }')
-${WINPTY_BIN} docker exec -it --user root ${APP_CONTAINER_NAME} bash -c 'source /ue/iiq/scripts/iiq-loadXml.sh create' || onFailure
+APP_CONTAINER_ID=$(docker-compose ps -q app)
+${WINPTY_BIN} docker exec -it --user root ${APP_CONTAINER_ID} bash -c 'source /ue/iiq/scripts/iiq-loadXml.sh create' || onFailure
+${WINPTY_BIN} docker exec -it --user root ${APP_CONTAINER_ID} bash -c 'source /ue/iiq/scripts/iiq-loadXml.sh create' || onFailure

@@ -22,8 +22,8 @@ Once you clone the repository, you will put the downloaded files into the proper
 
 The file locations should be as follows:
 
- * `identityiq-8.1.zip`: ssb => components => iiq8.1 => ga
- * `identityiq-8.1p2.jar`: ssb => components => iiq8.1 => patch
+ * `identityiq-8.1.zip`: ssb => components => iiq8.1 => base => ga
+ * `identityiq-8.1p2.jar`: ssb => components => iiq8.1 => base => patch
  * `1_ssb-v6.1.zip`: ssb => components => ssb-v6.1
      * This must also be renamed to `ssb-v6.1.zip`
 
@@ -42,6 +42,14 @@ We recommend to change your Docker settings to have 4gb memory and 2 cores.
 Java JDK is required for the build process. We recommend using OpenJDK 8 or higher.
 
  * <https://adoptopenjdk.net/>
+
+## Git Large File Storage
+
+The ant-contrib-1.0b3.jar file provided is a git lfs file. This means git lfs needs to be installed and must be pulled in the repo.
+
+ * <https://git-lfs.github.com/>
+
+After cloning the repository and installing git lfs, navigate to the cloned directory and use `git lfs pull`.
 
 ## Host File
 
