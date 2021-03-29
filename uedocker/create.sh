@@ -38,4 +38,3 @@ docker-compose up -d || onFailure
 echo "#### Run config import"
 APP_CONTAINER_ID=$(docker-compose ps -q app)
 ${WINPTY_BIN} docker exec -it --user root ${APP_CONTAINER_ID} bash -c 'source /ue/iiq/scripts/iiq-loadXml.sh create' || onFailure
-${WINPTY_BIN} docker exec -it --user root ${APP_CONTAINER_ID} bash -c 'source /ue/iiq/scripts/iiq-loadXml.sh create' || onFailure
