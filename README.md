@@ -172,4 +172,4 @@ This is a great way to get developers up and running with IdentityIQ very quickl
 
 To get an idea of what this might look like, here is what a typical CI/CD docker based deployment looks like for our customers:
 
-![SailPoint IdentityIQ Docker CI/CD Process](https://uberether.com/images/Slide4.png)
+![SailPoint IdentityIQ Docker CI/CD Process](https://uberether.com/wp-content/uploads/2019/08/uberether-1.jpg)
