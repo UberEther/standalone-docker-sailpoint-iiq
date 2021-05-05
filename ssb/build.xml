@@ -108,6 +108,10 @@
                 <exclude name="**/archive/**"/>
             </fileset>
         </copy>
+        <echo message="******************************************" />
+        <echo message="*** Executing Target Properties against Plugins" />
+        <echo message="******************************************" />
+        <replace dir="${ue.build.workdir}/pluginsrc" replacefilterfile="${ue.build.workdir}/${ue.env}.target.properties" includes="**/*.xml" encoding="UTF-8"/>
     </target>
 
     <!-- buildWar - Calls the SailPoint SSB to build the war
