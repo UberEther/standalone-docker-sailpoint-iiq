@@ -1,5 +1,5 @@
 # docker-compose.yaml
-version: '2'
+version: '3.8'
 
 volumes:
   db_volume: # Separate persistent volume for the DB data
@@ -8,44 +8,45 @@ services:
   db:
     build: ./ICAM-MYSQL
     expose:
-       - "3306"
+      - "3306"
     ports:
-       - "3306:3306" # For dev debugging
+      - "3306:3306" # For dev debugging
     volumes:
       - "db_volume:/var/lib/mysql"
       - "./volumes/app-ue:/ue/iiq/tomcat/webapps/ue:rw"
       - "./volumes/app-scripts:/ue/iiq/scripts:ro"
+    hostname: mysql.icam.local
+
   app:
     build: ./ICAM-TOMCAT
     depends_on:
-       - db
-    links:
-       - db:mysql.icam.local
+      - db
     expose:
-       - "8009"
+      - "8009"
     ports:
-       - "8080:8080" # For dev debugging - HTTP interface
-       - "8000:8000" # For dev debugging - Java debug (if enabled in Dockerfile)
-       - "8001:8001" # For dev debugging - JMX (if enabled in Dockerfile)
+      - "8080:8080" # For dev debugging - HTTP interface
+      - "8000:8000" # For dev debugging - Java debug (if enabled in Dockerfile)
+      - "8001:8001" # For dev debugging - JMX (if enabled in Dockerfile)
     volumes:
-       - "./volumes/app-logs:/ue/logs/tomcat"
-       - "./volumes/app-ue:/usr/local/tomcat/webapps/ue"
-       - "./volumes/app-scripts:/ue/iiq/scripts:ro"
+      - "./volumes/app-logs:/ue/logs/tomcat"
+      - "./volumes/app-ue:/usr/local/tomcat/webapps/ue"
+      - "./volumes/app-scripts:/ue/iiq/scripts:ro"
+    hostname: iiq.icam.local
+
   web: # Note: URL is http://dev.icam.local/ue
     build: ./ICAM-HTTPD
     depends_on:
-       - app
-    links:
-       - app:iiq.icam.local
+      - app
     ports:
-       - "443:443"
-       - "80:80"
+      - "443:443"
+      - "80:80"
     volumes:
-       - "./volumes/web-logs:/ue/logs/httpd"
+      - "./volumes/web-logs:/ue/logs/httpd"
+
   mail: # Note: URL is http://dev.icam.local:8025
     build: ./ICAM-MAIL
     depends_on:
-       - app
+      - app
     ports:
-       - "1025:1025" # smtp server
-       - "8025:8025" # web ui
+      - "1025:1025" # smtp server
+      - "8025:8025" # web ui

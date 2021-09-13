@@ -10,22 +10,21 @@ If you were previously on v1, v2 has breaking changes. The `src` folder has been
 ## SailPoint Binaries
 
 Please note that IdentityIQ is closed source so you first need to get a license for IdentityIQ.
-To do this, go to <https://community.sailpoint.com/> to download the software (identityiq-8.1.zip & identityiq-8.1p2.jar & 1_ssb-v6.1.zip).
+To do this, go to <https://community.sailpoint.com/> to download the software (identityiq-8.1.zip & identityiq-8.1p3.jar & ssb-v7.zip).
 
 The file identityiq-8.1.zip can currently be found at: <https://community.sailpoint.com/t5/IdentityIQ-Server-Software/IdentityIQ-8-1/ta-p/158175>
 
-The file identityiq-8.1p2.jar can currently be found at: <https://community.sailpoint.com/t5/IdentityIQ-Server-Software/IdentityIQ-8-1p2/ta-p/182114>
+The file identityiq-8.1p3.jar can currently be found at: <https://community.sailpoint.com/t5/IdentityIQ-Server-Software/IdentityIQ-8-1p3/ta-p/190689>
 
-The file 1_ssb-v6.1.zip can currently be found at: <https://community.sailpoint.com/t5/Services-Standard-Deployment/Services-Standard-Build-SSB-v6-1/ta-p/76056>
+The file ssb-v7.zip can currently be found at: <https://community.sailpoint.com/t5/Professional-Services/Services-Standard-Build-SSB-v7/ta-p/190496>
 
 Once you clone the repository, you will put the downloaded files into the proper ssb folders within components to get started.
 
 The file locations should be as follows:
 
  * `identityiq-8.1.zip`: ssb => components => iiq8.1 => base => ga
- * `identityiq-8.1p2.jar`: ssb => components => iiq8.1 => base => patch
- * `1_ssb-v6.1.zip`: ssb => components => ssb-v6.1
-     * This must also be renamed to `ssb-v6.1.zip`
+ * `identityiq-8.1p3.jar`: ssb => components => iiq8.1 => base => patch
+ * `ssb-v7.zip`: ssb => components => ssb-v7
 
 This does not include **ANY** SailPoint proprietary code and can only be used if you get these binaries from Compass.
 
@@ -63,7 +62,7 @@ Add the following `127.0.0.1 dev.icam.local`
 
 # Description
 
-This installation will provide you a working instance of SailPoint IdentityIQ 8.1p2 running with OpenJDK and Tomcat 9 in a Docker container.
+This installation will provide you a working instance of SailPoint IdentityIQ 8.1p3 running with OpenJDK and Tomcat 9 in a Docker container.
 
 An additional container is built utilizing MySQL to host the IdentityIQ database and an Apache HTTP Server proxying the connections back to Tomcat.
 
