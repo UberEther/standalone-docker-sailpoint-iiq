@@ -7,5 +7,5 @@
 /dist/*.war.MD5
 /release
 /.vscode
-*.zip
+/ssb/components/**/*.zip
 /ssb/components/iiq*/**/*.jar

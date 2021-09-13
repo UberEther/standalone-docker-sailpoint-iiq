@@ -10,14 +10,9 @@ rem
 
 if EXIST build-lib\ant GOTO RUN_SSB
 
-echo "Unzipping Ant from SSB"
-mkdir t
-powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('components\ssb-v6.1\ssb-v6.1.zip', 't'); }"
-move t\lib\ant build-lib\
-rmdir /S /Q t
-
-mv build-lib/lib/ant build-lib
-rmdir build-lib/lib
+echo "Unzipping Ant"
+powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('build-lib/apache-ant-1.10.10-bin.zip', 'build-lib'); }"
+ren build-lib\apache-ant-1.10.10 build-lib\ant
 
 :RUN_SSB
 build-lib\ant\bin\ant.bat -logger org.apache.tools.ant.listener.ProfileLogger %*
