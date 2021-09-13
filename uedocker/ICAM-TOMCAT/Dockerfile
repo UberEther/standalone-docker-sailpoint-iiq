@@ -42,15 +42,15 @@ RUN ln -sf /usr/local/tomcat /ue/iiq/tomcat && \
     rm -rf /usr/local/tomcat/logs && \
     ln -sfT /ue/logs/tomcat /usr/local/tomcat/logs && \
     mkdir /ue/iiq/tomcat/webapps/ue && \
-    ln -sfT /usr/lib/jvm/java-8-openjdk-amd64 /ue/java && \
-    ln -sfT /usr/lib/jvm/java-8-openjdk-amd64 /ue/iiq/java && \
+    ln -sfT $JAVA_HOME /ue/java && \
+    ln -sfT $JAVA_HOME /ue/iiq/java && \
     ln -sfT /ue/iiq/tomcat/webapps/ue/WEB-INF /ue/iiq/WEB-INF
 
 #
 # ADD OUR DEV CERTS TO THE JAVA TRUST CHAIN
 #
 ADD dev.icam.local.cer .
-RUN keytool -importcert -noprompt -trustcacerts -alias 'dev.icam.local' -file dev.icam.local.cer -keystore /etc/ssl/certs/java/cacerts -storepass changeit -v && \
+RUN keytool -importcert -noprompt -trustcacerts -alias 'dev.icam.local' -file dev.icam.local.cer -keystore /ue/java/lib/security/cacerts -storepass changeit -v && \
     rm dev.icam.local.cer
 
 #
@@ -101,6 +101,10 @@ ENV CATALINA_OPTS="-Xms512M -Xmx1024M -XX:+UseG1GC ${JAVA_DEBUG_OPTS} ${JMX_OPTS
 EXPOSE 8080
 EXPOSE 8000
 EXPOSE 8001
+EXPOSE 8009
+
+COPY server.xml /usr/local/tomcat/conf/
+
 VOLUME [ "/ue/logs/tomcat", "/usr/local/tomcat/webapps/ue", "/ue/iiq/scripts" ]
 
 #

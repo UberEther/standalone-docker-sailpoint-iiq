@@ -7,10 +7,9 @@
 #
 
 if [ ! -d build-lib/ant ]; then
-    echo "Unzipping Ant from SSB"
-    unzip -q components/ssb-v6.1/ssb-v6.1.zip 'lib/ant/**' -d 'build-lib'
-    mv build-lib/lib/ant build-lib
-    rmdir build-lib/lib
+    echo "Unzipping Ant"
+    unzip -q build-lib/apache-ant-1.10.10-bin.zip -d 'build-lib'
+    mv build-lib/apache-ant-1.10.10 build-lib/ant
     chmod +x build-lib/ant/bin/ant
 fi
 

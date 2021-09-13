@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="com.ue.sailpoint.build" default="war">
+<project name="com.ue.sailpoint.build" default="war"
+xmlns:if="ant:if"
+xmlns:unless="ant:unless">
 
     <!--
         Default is to build local-dev.  To override target environment, add the
@@ -19,7 +21,7 @@
 
     <!-- local-dev is default value - set from command line with -Due.env=FOO -->
     <property name="ue.env" value="local-dev" />
-    <property name="ue.env.ssb" value="ssb-v6.1" />
+    <property name="ue.env.ssb" value="ssb-v7" />
 
     <!-- Constants for where things are -->
     <property name="ue.envconfig.path" value="./envconfig/${ue.env}" />
@@ -30,11 +32,10 @@
 
     <property name="ue.dist.releasedir" location="../release/" />
 
-    <!-- Location of libraries -->
-    <property name="ue.lib.antcontrib" location="build-lib/ant-contrib-1.0b3.jar" />
+    <!-- Location of libraries, location is inside extracted SSB -->
+    <property name="ue.lib.antcontrib" location="./build/lib/ant-contrib-1.0b3.jar" />
 
-    <!-- Load AntContrib -->
-    <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${ue.lib.antcontrib}" />
+    
 
     <!-- loadConfig - Loads all configuration settings -->
     <target name="loadConfig">
@@ -70,6 +71,8 @@
 
         <echo message="****** Copying binaries" />
         <unzip src="components/${ue.env.ssb}/${ue.env.ssb}.zip" dest="${ue.build.workdir}" overwrite="true"/>
+        <!-- Load AntContrib -->
+        <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${ue.lib.antcontrib}" />
         <echo message="****** Removing example scripts" />
         <delete dir="${ue.build.workdir}/scripts" includes="build.custom*" />
 
